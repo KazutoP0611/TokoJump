@@ -10,8 +10,6 @@ public class Gameplay : MonoBehaviour
     [SerializeField] GameObject Player;
 
     [SerializeField] GameObject GameoverPanel;
-    [SerializeField] int titleSceneIndex;
-    [SerializeField] int resultSceneIndex;
     [SerializeField] TMP_Text shellCountText;
     [SerializeField] AudioSource collectSound;
 
@@ -45,9 +43,7 @@ public class Gameplay : MonoBehaviour
         shellCount = 0;
         shellCountText.text = shellCount.ToString();
 
-        if (changeSceneCoroutine != null)
-            StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(SceneManager.GetActiveScene().buildIndex));
+        ChangeScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void NextLevel()
@@ -56,19 +52,19 @@ public class Gameplay : MonoBehaviour
         if (nextLevel >= SceneManager.sceneCountInBuildSettings)
             return;
         
-        if (changeSceneCoroutine != null)
-            StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(nextLevel));
+        ChangeScene(nextLevel);
     }
 
-    public void LoadResultScene()
+    public void LoadResultScene() => ChangeScene(1);
+
+    private void ChangeScene(int loadLevel)
     {
         if (changeSceneCoroutine != null)
             StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(resultSceneIndex));
+        changeSceneCoroutine = StartCoroutine(ChangeSceneCoroutine(loadLevel));
     }
 
-    private IEnumerator ChangeScene(int loadLevel)
+    private IEnumerator ChangeSceneCoroutine(int loadLevel)
     {
         uiFadeController.FadeOut();
         yield return uiFadeController.fadeCoroutine;
@@ -78,10 +74,7 @@ public class Gameplay : MonoBehaviour
     public void Quit()
     {
         shellCount = 0;
-
-        if (changeSceneCoroutine != null)
-            StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(titleSceneIndex));
+        ChangeScene(0);
     }
 
     public void UpdateShellCount(int amount)

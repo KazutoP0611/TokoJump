@@ -7848,8 +7848,8 @@ MonoBehaviour:
   respawnComponent: {fileID: 12717373}
   Player: {fileID: 1683820790}
   GameoverPanel: {fileID: 1637111321}
-  titleSceneString: Title
-  resultSceneString: Result
+  titleSceneIndex: 0
+  resultSceneIndex: 1
   shellCountText: {fileID: 472658937}
   collectSound: {fileID: 1109744981}
 --- !u!82 &1109744981

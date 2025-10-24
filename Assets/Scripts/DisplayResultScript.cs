@@ -61,50 +61,32 @@ public class DisplayResultScript : MonoBehaviour
         shellScoreText.text = shellScore.ToString();
     }
 
-    //private void Update()
-    //{
-    //    if (timeCount)
-    //    {
-    //        t += Time.deltaTime;
-    //        float imageAlpha = (t / fadeBackGroundInSecs);
-    //        canvasBackground.color = new Color(0.4313726f, 0.6980392f, 0.4780907f, imageAlpha);
-
-    //        if (t >= fadeBackGroundInSecs)
-    //            timeCount = false;
-    //    }
-    //}
-
     public void GotoNextLevel()
     {
         Gameplay.shellCount = 0;
-
-        //SceneManager.LoadScene(currentSceneIndex + 1);
-        if (changeSceneCoroutine != null)
-            StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(currentSceneIndex + 1));
+        ChangeScene(currentSceneIndex + 1);
     }
 
     public void BackToMainMenu()
     {
         Gameplay.shellCount = 0;
-
-        //SceneManager.LoadScene(0);
-        if (changeSceneCoroutine != null)
-            StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(0));
+        ChangeScene(0);
     }
 
     public void RestartGame()
     {
         Gameplay.shellCount = 0;
-
-        //SceneManager.LoadScene(2);
-        if (changeSceneCoroutine != null)
-            StopCoroutine(changeSceneCoroutine);
-        changeSceneCoroutine = StartCoroutine(ChangeScene(currentSceneIndex));
+        ChangeScene(2);
     }
 
-    private IEnumerator ChangeScene(int loadLevel)
+    private void ChangeScene(int loadLevel)
+    {
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeSceneCoroutine(loadLevel));
+    }
+
+    private IEnumerator ChangeSceneCoroutine(int loadLevel)
     {
         uiFadeController.FadeOut();
         yield return uiFadeController.fadeCoroutine;
