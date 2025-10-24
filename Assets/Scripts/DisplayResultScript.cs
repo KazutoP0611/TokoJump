@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -20,9 +21,17 @@ public class DisplayResultScript : MonoBehaviour
     [Header("Select Script Settings")]
     public SelectScript selectScript;
 
+    private UI_Fade uiFadeController;
+    private Coroutine changeSceneCoroutine;
+
     float t = 0.8f;
     bool timeCount = false;
     int currentSceneIndex;
+
+    private void Awake()
+    {
+        uiFadeController = FindFirstObjectByType<UI_Fade>();
+    }
 
     private void Start()
     {
@@ -68,18 +77,37 @@ public class DisplayResultScript : MonoBehaviour
     public void GotoNextLevel()
     {
         Gameplay.shellCount = 0;
-        SceneManager.LoadScene(currentSceneIndex + 1);
+
+        //SceneManager.LoadScene(currentSceneIndex + 1);
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(currentSceneIndex + 1));
     }
 
     public void BackToMainMenu()
     {
         Gameplay.shellCount = 0;
-        SceneManager.LoadScene(0);
+
+        //SceneManager.LoadScene(0);
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(0));
     }
 
     public void RestartGame()
     {
         Gameplay.shellCount = 0;
-        SceneManager.LoadScene(2);
+
+        //SceneManager.LoadScene(2);
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(currentSceneIndex));
+    }
+
+    private IEnumerator ChangeScene(int loadLevel)
+    {
+        uiFadeController.FadeOut();
+        yield return uiFadeController.fadeCoroutine;
+        SceneManager.LoadScene(loadLevel);
     }
 }

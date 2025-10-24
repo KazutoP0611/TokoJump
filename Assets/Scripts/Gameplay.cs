@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,13 +10,21 @@ public class Gameplay : MonoBehaviour
     [SerializeField] GameObject Player;
 
     [SerializeField] GameObject GameoverPanel;
-    [SerializeField] string titleSceneString;
-    [SerializeField] string resultSceneString;
+    [SerializeField] int titleSceneIndex;
+    [SerializeField] int resultSceneIndex;
     [SerializeField] TMP_Text shellCountText;
     [SerializeField] AudioSource collectSound;
 
+    private UI_Fade uiFadeController;
+    private Coroutine changeSceneCoroutine;
+
     public static int shellCount = 0;
     public static int currentScene;
+
+    private void Awake()
+    {
+        uiFadeController = FindFirstObjectByType<UI_Fade>();
+    }
 
     private void Start()
     {
@@ -35,26 +44,44 @@ public class Gameplay : MonoBehaviour
     {
         shellCount = 0;
         shellCountText.text = shellCount.ToString();
-        SceneManager.LoadScene(currentScene);
+
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(SceneManager.GetActiveScene().buildIndex));
     }
 
     public void NextLevel()
     {
         int nextLevel = currentScene + 1;
+        if (nextLevel >= SceneManager.sceneCountInBuildSettings)
+            return;
+        
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(nextLevel));
+    }
 
-        if (nextLevel >= SceneManager.sceneCountInBuildSettings) return;
-        SceneManager.LoadScene(nextLevel);
+    public void LoadResultScene()
+    {
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(resultSceneIndex));
+    }
+
+    private IEnumerator ChangeScene(int loadLevel)
+    {
+        uiFadeController.FadeOut();
+        yield return uiFadeController.fadeCoroutine;
+        SceneManager.LoadScene(loadLevel);
     }
 
     public void Quit()
     {
         shellCount = 0;
-        SceneManager.LoadScene(0);
-    }
 
-    public void LoadResultScene()
-    {
-        SceneManager.LoadScene(resultSceneString);
+        if (changeSceneCoroutine != null)
+            StopCoroutine(changeSceneCoroutine);
+        changeSceneCoroutine = StartCoroutine(ChangeScene(titleSceneIndex));
     }
 
     public void UpdateShellCount(int amount)
